@@ -18,16 +18,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$user]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$user) {
-            $error = "Username or Passwort is not correct";
-        } elseif (password_verify($password, $user['passwort'])) {
+        if (!$user || !password_verify($password, $user['passwort'])) {
+            $error = "Username or Password is not correct";
+        } else {
             $_SESSION['user'] = $user['user_id'];
             $_SESSION['name'] = $user['name'];
 
-            if ($benutzer['role'] === 'admin') {
+            if ($user['role'] == 'admin') {
                 header("Location: admin.php");
+                exit;
             } else {
                 header("Location: user.php");
+                exit;
             }
         }
     }

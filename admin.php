@@ -14,7 +14,7 @@ require 'db.php';
 </head>
 
 <body>
-
+    <h1>Admin Oberfläche</h1>
 </body>
 
 </html>
