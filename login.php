@@ -11,6 +11,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $_POST['name'];
     $password = $_POST['passwort'];
 
+    // Password hashen
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
     if (empty($user) || empty($password)) {
         $error = "Please fill all fields";
     } else {
@@ -80,6 +83,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="form-group">
                 <button type="submit">Sign in</button>
+            </div>
+            <div class="form-group">
+                <a href="register.php">
+                    <button type="button">Register</button>
+                </a>
             </div>
         </form>
 
