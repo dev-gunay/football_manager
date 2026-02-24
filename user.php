@@ -1,14 +1,252 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$host = 'localhost';
+$db   = 'football_match_manager';
+$user = 'root';
+$pass = '';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+];
+
+$pdo = new PDO($dsn, $user, $pass, $options);
+
+$user_id = $_SESSION['user'];
+
+/* -----------------------------
+   STATUS SPEICHERN
+------------------------------ */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['event_id'], $_POST['status'])) {
+
+    $event_id = $_POST['event_id'];
+    $status = $_POST['status'];
+
+    $check = $pdo->prepare("SELECT * FROM participation WHERE user_id = ? AND event_id = ?");
+    $check->execute([$user_id, $event_id]);
+
+    if ($check->rowCount() > 0) {
+        $update = $pdo->prepare("UPDATE participation SET status = ? WHERE user_id = ? AND event_id = ?");
+        $update->execute([$status, $user_id, $event_id]);
+    } else {
+        $insert = $pdo->prepare("INSERT INTO participation (user_id, event_id, status) VALUES (?, ?, ?)");
+        $insert->execute([$user_id, $event_id, $status]);
+    }
+}
+
+/* -----------------------------
+   EVENTS LADEN
+------------------------------ */
+$stmt = $pdo->query("SELECT * FROM events ORDER BY event_date ASC");
+$events = $stmt->fetchAll();
+?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Interface</title>
+    <title>User Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 40px 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .event-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .event-info {
+            font-size: 14px;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        .status-buttons {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .status-buttons button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .yes {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .maybe {
+            background: #FFC107;
+            color: black;
+        }
+
+        .no {
+            background: #F44336;
+            color: white;
+        }
+
+        .participants {
+            margin-top: 20px;
+            display: flex;
+            gap: 30px;
+            font-size: 13px;
+        }
+
+        .participants div {
+            flex: 1;
+        }
+
+        .participants h4 {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .logout {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .logout a {
+            padding: 10px 20px;
+            border-radius: 10px;
+            background: white;
+            color: #764ba2;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
 </head>
 
 <body>
-    <h1>User Oberfläche</h1>
+    <div class="container">
+
+        <h1>Willkommen, <?php echo htmlspecialchars($_SESSION['name']); ?> 👋</h1>
+
+        <?php foreach ($events as $event): ?>
+
+            <div class="card">
+
+                <div class="event-title">
+                    <?php echo htmlspecialchars($event['title']); ?>
+                </div>
+
+                <div class="event-info">
+                    📍 <?php echo htmlspecialchars($event['location']); ?>
+                </div>
+
+                <div class="event-info">
+                    📅 <?php echo date("d.m.Y", strtotime($event['event_date'])); ?>
+                </div>
+
+                <!-- STATUS BUTTONS -->
+                <form method="POST">
+                    <input type="hidden" name="event_id" value="<?php echo $event['event_id']; ?>">
+                    <div class="status-buttons">
+                        <button class="yes" name="status" value="Yes">Yes</button>
+                        <button class="maybe" name="status" value="Maybe">Maybe</button>
+                        <button class="no" name="status" value="No">No</button>
+                    </div>
+                </form>
+
+                <!-- TEILNEHMERLISTE -->
+                <div class="participants">
+
+                    <?php
+                    $stmt = $pdo->prepare("
+            SELECT u.name, p.status
+            FROM participation p
+            JOIN user u ON p.user_id = u.user_id
+            WHERE p.event_id = ?
+        ");
+                    $stmt->execute([$event['event_id']]);
+                    $participants = $stmt->fetchAll();
+
+                    $yes = [];
+                    $maybe = [];
+                    $no = [];
+
+                    foreach ($participants as $p) {
+                        if ($p['status'] === 'Yes') $yes[] = $p['name'];
+                        if ($p['status'] === 'Maybe') $maybe[] = $p['name'];
+                        if ($p['status'] === 'No') $no[] = $p['name'];
+                    }
+                    ?>
+
+                    <div>
+                        <h4>✅ Yes (<?php echo count($yes); ?>)</h4>
+                        <?php foreach ($yes as $name) echo htmlspecialchars($name) . "<br>"; ?>
+                    </div>
+
+                    <div>
+                        <h4>🤔 Maybe (<?php echo count($maybe); ?>)</h4>
+                        <?php foreach ($maybe as $name) echo htmlspecialchars($name) . "<br>"; ?>
+                    </div>
+
+                    <div>
+                        <h4>❌ No (<?php echo count($no); ?>)</h4>
+                        <?php foreach ($no as $name) echo htmlspecialchars($name) . "<br>"; ?>
+                    </div>
+
+                </div>
+
+            </div>
+
+        <?php endforeach; ?>
+
+        <div class="logout">
+            <a href="logout.php">Logout</a>
+        </div>
+
+    </div>
 </body>
 
 </html>
