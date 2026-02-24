@@ -1,4 +1,4 @@
-    * {
+ * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -28,7 +28,7 @@
             padding: 25px;
             border-radius: 20px;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         .event-title {
@@ -55,7 +55,6 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            transition: 0.2s;
         }
 
         .yes {
@@ -73,8 +72,20 @@
             color: white;
         }
 
-        .status-buttons button:hover {
-            transform: scale(1.05);
+        .participants {
+            margin-top: 20px;
+            display: flex;
+            gap: 30px;
+            font-size: 13px;
+        }
+
+        .participants div {
+            flex: 1;
+        }
+
+        .participants h4 {
+            margin-bottom: 8px;
+            font-size: 14px;
         }
 
         .logout {
