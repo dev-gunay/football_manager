@@ -67,16 +67,24 @@ User Dashboard
 
 
 👨‍💼 Admin Panel
+
 <img width="1234" height="885" alt="admin panel" src="https://github.com/user-attachments/assets/b57b978a-075a-414c-a9ff-595b8526b0bc" />
 
 
+
+
 👤 User Dashboard
+
 <img width="1120" height="678" alt="new user" src="https://github.com/user-attachments/assets/05389d81-ddc6-4152-8203-01b88dbc49e3" />
+
+
 
 
 📝 Registration Page
 
 <img width="440" height="436" alt="register" src="https://github.com/user-attachments/assets/b9966bc1-ecc4-4d57-b8df-fe17ec7c0598" />
+
+
 
 🛠 Technologies Used
 
@@ -91,40 +99,6 @@ HTML5
 CSS3 (Glassmorphism UI)
 
 Session-based authentication
-
-🗄 Database Structure
-user
-
-user_id
-
-name
-
-email
-
-passwort
-
-role
-
-events
-
-event_id
-
-title
-
-location
-
-event_date
-
-participation
-
-participation_id
-
-user_id
-
-event_id
-
-status (Enum: Yes, Maybe, No)
-
 
 🔒 Security Features
 
