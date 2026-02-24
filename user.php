@@ -58,7 +58,7 @@ $events = $stmt->fetchAll();
     <title>User Dashboard</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="user.css">
+    <link rel="stylesheet" href="styles/user.css">
 </head>
 
 <body>
