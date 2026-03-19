@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// --- 1️⃣ DB Verbindung ---
+// DB Verbindung 
 $host = 'localhost';
 $db   = 'football_match_manager';
 $user = 'root';
@@ -20,7 +20,7 @@ try {
     die("DB Verbindung fehlgeschlagen: " . $e->getMessage());
 }
 
-// --- 2️⃣ Neues Formular abgeschickt ---
+//  Neues Formular abgeschickt 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (isset($_POST['create_user'])) {
