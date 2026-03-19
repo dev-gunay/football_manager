@@ -22,9 +22,8 @@ $pdo = new PDO($dsn, $user, $pass, $options);
 
 $user_id = $_SESSION['user'];
 
-/* -----------------------------
-   STATUS SPEICHERN
------------------------------- */
+
+   // STATUS SPEICHERN
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['event_id'], $_POST['status'])) {
 
     $event_id = $_POST['event_id'];
@@ -42,9 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['event_id'], $_POST['s
     }
 }
 
-/* -----------------------------
-   EVENTS LADEN
------------------------------- */
+// Lade Event
+
 $stmt = $pdo->query("SELECT * FROM events ORDER BY event_date ASC");
 $events = $stmt->fetchAll();
 ?>
@@ -82,7 +80,7 @@ $events = $stmt->fetchAll();
                     📅 <?php echo date("d.m.Y", strtotime($event['event_date'])); ?>
                 </div>
 
-                <!-- STATUS BUTTONS -->
+                <!-- // Buttons -->
                 <form method="POST">
                     <input type="hidden" name="event_id" value="<?php echo $event['event_id']; ?>">
                     <div class="status-buttons">
